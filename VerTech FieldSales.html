@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ver-Tech">
+<title>Ver-Tech Labs | Field Sales</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #3a7a3b;
+    --green-dark: #2d5c2e;
+    --green-light: #4a9a4b;
+    --bg: #1e3320;
+    --bg2: #243d25;
+    --bg3: #2e5030;
+    --border: #3a6040;
+    --white: #ffffff;
+    --gray1: #cccccc;
+    --gray2: #999999;
+    --accent: #6fcf6f;
+    --red: #ef9a9a;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: var(--mono); background: var(--bg); color: var(--white); min-height: 100vh; overflow-x: hidden; }
+  
+  /* HEADER */
+  .header { background: var(--green-dark); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+  .header-logo { font-size: 14px; font-weight: 500; letter-spacing: 3px; color: #fff; text-transform: uppercase; }
+  .header-sub { font-size: 9px; color: #a5d6a7; letter-spacing: 2px; margin-top: 2px; }
+  .header-rep { font-size: 10px; color: #a5d6a7; letter-spacing: 1px; text-align: right; }
+  .badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; padding: 1px 6px; font-size: 9px; margin-left: 6px; }
+
+  /* TABS */
+  .tab-bar { display: flex; background: var(--bg2); border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn { padding: 12px 14px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; color: var(--gray2); border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; font-family: var(--mono); white-space: nowrap; transition: color 0.2s; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* CONTENT */
+  .content { padding: 20px 16px; max-width: 900px; margin: 0 auto; }
+  .sec-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  .tab-panel { display: none; } .tab-panel.active { display: block; }
+
+  /* FORM ELEMENTS */
+  label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray1); display: block; margin-bottom: 5px; }
+  input, select { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; color: #fff; padding: 9px 10px; font-size: 12px; font-family: var(--mono); outline: none; width: 100%; }
+  input:focus, select:focus { border-color: var(--accent); }
+  select option { background: var(--bg2); }
+  .field { display: flex; flex-direction: column; margin-bottom: 12px; }
+  .row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+  .btn { background: var(--green); color: #fff; border: none; border-radius: 4px; padding: 10px 18px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; font-family: var(--mono); white-space: nowrap; transition: background 0.2s; }
+  .btn:active { background: var(--green-light); }
+  .btn-ghost { background: none; border: 1px solid var(--border); color: var(--gray1); border-radius: 4px; padding: 8px 14px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; font-family: var(--mono); }
+  .btn-sm { background: none; border: 1px solid #c62828; color: var(--red); border-radius: 3px; padding: 3px 8px; font-size: 10px; cursor: pointer; font-family: var(--mono); }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-bottom: 14px; }
+  .note { font-size: 10px; color: var(--gray2); margin-top: 10px; letter-spacing: 1px; }
+  .empty { text-align: center; padding: 40px; color: var(--gray2); font-size: 11px; letter-spacing: 2px; }
+  .warn { font-size: 10px; color: var(--red); margin-top: 8px; letter-spacing: 1px; }
+
+  /* TABLE */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; overflow-x: auto; display: block; }
+  .tbl thead, .tbl tbody, .tbl tr { display: table; width: 100%; table-layout: fixed; }
+  .tbl th { background: var(--green-dark); color: #fff; padding: 8px 10px; text-align: left; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
+  .tbl td { padding: 8px 10px; border-bottom: 1px solid var(--bg3); color: #fff; vertical-align: middle; }
+  .tbl tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+  .tbl tr.total-row td { background: var(--green-dark); font-weight: 600; color: #fff; }
+  .tbl a { color: var(--accent); text-decoration: none; }
+  .green { color: var(--accent) !important; font-weight: 600; }
+  .muted { color: var(--gray1) !important; }
+
+  /* PACKAGE BUILDER */
+  .pkg-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-bottom: 14px; }
+  .pkg-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+  .pkg-cost { font-size: 22px; font-weight: 600; letter-spacing: 1px; }
+  .pkg-label { font-size: 9px; letter-spacing: 2px; color: var(--gray1); text-transform: uppercase; margin-bottom: 3px; }
+  .blended-box { background: rgba(0,0,0,0.3); border: 1px solid var(--accent); border-radius: 6px; padding: 16px; margin-top: 8px; }
+  .blended-num { font-size: 28px; font-weight: 600; color: var(--accent); letter-spacing: 2px; margin-top: 8px; }
+
+  /* TITRATION */
+  .tit-product { font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 4px; letter-spacing: 1px; }
+  .tit-name { font-size: 10px; color: var(--gray1); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+  .drops-num { font-size: 20px; font-weight: 600; color: var(--accent); }
+
+  /* WATER HARDNESS */
+  .rank-badge { display: inline-block; background: var(--green); color: #fff; border-radius: 3px; padding: 1px 7px; font-size: 10px; font-weight: 600; }
+
+  /* MOBILE RESPONSIVE */
+  @media (max-width: 600px) {
+    .content { padding: 14px 12px; }
+    .tbl th, .tbl td { padding: 7px 8px; font-size: 10px; }
+    .pkg-cost { font-size: 18px; }
+  }
+
+  /* CHECKBOX */
+  .check-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 10px; letter-spacing: 1px; color: var(--gray1); cursor: pointer; }
+  input[type=checkbox] { width: auto; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-logo">Ver-Tech Labs</div>
+    <div class="header-sub">Field Sales Reference</div>
+  </div>
+  <div class="header-rep">Steve Baum<span class="badge">v2.0</span><br><span style="font-size:9px;color:#7aaa7b">Western U.S. & Canada</span></div>
+</div>
+
+<div class="tab-bar" id="tabBar">
+  <button class="tab-btn active" onclick="showTab(0)">Cost/Car</button>
+  <button class="tab-btn" onclick="showTab(1)">Quote</button>
+  <button class="tab-btn" onclick="showTab(2)">Titration</button>
+  <button class="tab-btn" onclick="showTab(3)">SDS</button>
+  <button class="tab-btn" onclick="showTab(4)">Price</button>
+  <button class="tab-btn" onclick="showTab(5)">Hardness</button>
+  <button class="tab-btn" onclick="showTab(6)">Packages</button>
+</div>
+
+<div class="content">
+
+<!-- ── TAB 0: COST PER CAR ── -->
+<div class="tab-panel active" id="tab0">
+  <div class="sec-title">Cost Per Car Calculator</div>
+  <div id="cpcRows"></div>
+  <p class="note">SG from Ver-Tech SDS Library. 4×1 Gal Box = 15,142 mL. Jan 2026 list pricing.</p>
+</div>
+
+<!-- ── TAB 1: QUOTE BUILDER ── -->
+<div class="tab-panel" id="tab1">
+  <div class="sec-title">Quote Builder</div>
+  <div class="card">
+    <div class="field"><label>Customer / Account</label><input id="qCustomer" placeholder="e.g. White Water / Scrubbs"></div>
+    <div class="row">
+      <div class="field" style="flex:3">
+        <label>Product</label>
+        <select id="qProduct"><option value="">— select product —</option></select>
+      </div>
+      <div class="field" style="width:70px"><label>Qty</label><input id="qQty" type="number" min="1" value="1"></div>
+      <button class="btn" onclick="addQuoteLine()">+ Add</button>
+    </div>
+    <label class="check-row"><input type="checkbox" id="qShowDist" onchange="renderQuote()"> Show distributor pricing</label>
+  </div>
+  <div id="quoteTable"></div>
+</div>
+
+<!-- ── TAB 2: TITRATION ── -->
+<div class="tab-panel" id="tab2">
+  <div class="sec-title">Titration Reference</div>
+  <div class="field" style="max-width:380px;margin-bottom:20px">
+    <label>Select Product</label>
+    <select id="titSelect" onchange="renderTitration()"><option value="">— select product —</option></select>
+  </div>
+  <div id="titResult"><div class="empty">Select a product to view titration data</div></div>
+  <p class="note">From Ver-Tech Labs titration cards. Contact jsloan@ver-techlabs.com for additional products.</p>
+</div>
+
+<!-- ── TAB 3: SDS LOOKUP ── -->
+<div class="tab-panel" id="tab3">
+  <div class="sec-title">SDS Quick Lookup</div>
+  <div class="field" style="max-width:380px;margin-bottom:20px">
+    <label>Search by name or code</label>
+    <input id="sdsSearch" placeholder="e.g. VT2200 or Drying Agent" oninput="renderSDS()">
+  </div>
+  <div id="sdsResult"><div class="empty">Type to search SDS library</div></div>
+  <p class="note">Full library: ver-techlabs.com/sds/ — Technical: jsloan@ver-techlabs.com</p>
+</div>
+
+<!-- ── TAB 4: PRICE LOOKUP ── -->
+<div class="tab-panel" id="tab4">
+  <div class="sec-title">Product Price Lookup</div>
+  <div class="row" style="max-width:500px;margin-bottom:20px">
+    <div class="field" style="flex:1">
+      <label>Search by name or code</label>
+      <input id="priceSearch" placeholder="e.g. VT2200 or Drying Agent" onkeydown="if(event.key==='Enter')renderPrice()">
+    </div>
+    <button class="btn" onclick="renderPrice()">Look Up</button>
+  </div>
+  <div id="priceResult"><div class="empty">Enter a product name or code and press Look Up</div></div>
+  <p class="note">Jan 2026 pricing. Blue Ice max 30% off list. All others 50% off list.</p>
+</div>
+
+<!-- ── TAB 5: WATER HARDNESS ── -->
+<div class="tab-panel" id="tab5">
+  <div class="sec-title">Water Hardness Compatibility</div>
+  <div class="card" style="font-size:11px;color:var(--gray1);line-height:1.8;margin-bottom:16px">
+    Grains per gallon (gpg) controlled at each dosage rate.<br>
+    Source: Ver-Tech Labs QM Reference Doc Rev 4 (Aug 2023).<br>
+    Results vary based on local water conditions.
+  </div>
+  <div id="hardnessTable"></div>
+</div>
+
+<!-- ── TAB 6: PACKAGE BUILDER ── -->
+<div class="tab-panel" id="tab6">
+  <div class="sec-title">Wash Package Builder</div>
+  <div id="packages"></div>
+  <button class="btn" onclick="addPackage()" style="margin-bottom:20px">+ Add Package</button>
+  <div id="blendedResult"></div>
+  <p class="note">Enter mL per car directly. Blended cost weighted by take rate. Jan 2026 list pricing.</p>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const VAULT = [
+  {code:"VT1070",name:"VAULT LOW pH 1070",list:132.00,sg:1.100,ml:15142},
+  {code:"VT1140",name:"VAULT LOW pH 1140",list:220.00,sg:1.020,ml:15142},
+  {code:"VT2010",name:"VAULT BUG REMOVER",list:221.00,sg:0.985,ml:15142},
+  {code:"VT2060",name:"VAULT HIGH pH PRESOAK & PREP SOAP",list:86.00,sg:1.100,ml:15142},
+  {code:"VT2200",name:"VAULT HIGH pH",list:132.00,sg:1.150,ml:15142},
+  {code:"VT3000",name:"VAULT BOOSTER",list:116.00,sg:1.450,ml:15142},
+  {code:"VT4500",name:"VAULT HIGH WHEEL",list:132.00,sg:1.180,ml:15142},
+  {code:"VT5000",name:"VAULT FOAM DETERGENT",list:110.23,sg:1.000,ml:15142},
+  {code:"VT5000B",name:"VAULT BLUE FOAM DETERGENT",list:152.00,sg:1.000,ml:15142},
+  {code:"VT5000G",name:"VAULT GREEN FOAM DETERGENT",list:152.00,sg:1.000,ml:15142},
+  {code:"VT5000R",name:"VAULT RED FOAM DETERGENT",list:152.00,sg:1.000,ml:15142},
+  {code:"VT5150",name:"VAULT CERAMIC HIGH FOAM",list:200.00,sg:1.000,ml:15142},
+  {code:"VT5900",name:"VAULT FOAMING FRAGRANCE",list:168.00,sg:1.001,ml:15142},
+  {code:"VT6000",name:"VAULT POLISH",list:156.00,sg:1.050,ml:15142},
+  {code:"VT7000",name:"VAULT CERAMIC PROTECTANT",list:448.00,sg:0.895,ml:15142},
+  {code:"VT7020",name:"VAULT ALL-SURFACE PROTECTANT",list:320.00,sg:1.000,ml:15142},
+  {code:"VT7500",name:"VAULT CARNAUBA WAX",list:320.00,sg:1.040,ml:15142},
+  {code:"VT7800",name:"VAULT FLEX CERAMIC",list:432.00,sg:0.940,ml:15142},
+  {code:"VT8000",name:"VAULT CERAMIC DRY AID",list:280.00,sg:0.900,ml:15142},
+  {code:"VT8020",name:"VAULT DRYING AGENT",list:240.00,sg:0.865,ml:15142},
+  {code:"VT9000",name:"VAULT GRAPHENE",list:550.00,sg:0.950,ml:15142},
+  {code:"VT9050",name:"VAULT SALT SHIELD",list:80.00,sg:1.070,ml:15142},
+];
+
+const ALL_PRODUCTS = [
+  // VAULT 4x1
+  ...VAULT.map(p=>({...p,size:"4×1 Gal Box",dist:p.list*0.50})),
+  // VAULT other sizes
+  {code:"VT1070.05",name:"VAULT LOW pH 1070",size:"5 Gal Tighthead",list:165.00,dist:82.50,ml:18925},
+  {code:"VT2060.05",name:"VAULT HIGH pH PRESOAK & PREP SOAP",size:"5 Gal Tighthead",list:107.50,dist:53.75,ml:18925},
+  {code:"VT2200.05",name:"VAULT HIGH pH",size:"5 Gal Tighthead",list:165.00,dist:82.50,ml:18925},
+  {code:"VT2200.30",name:"VAULT HIGH pH",size:"30 Gal Drum",list:975.00,dist:487.50,ml:113562},
+  {code:"VT4500.05",name:"VAULT HIGH WHEEL",size:"5 Gal Tighthead",list:165.00,dist:82.50,ml:18925},
+  {code:"VT4500.30",name:"VAULT HIGH WHEEL",size:"30 Gal Drum",list:975.00,dist:487.50,ml:113562},
+  {code:"VT5150.05",name:"VAULT CERAMIC HIGH FOAM",size:"5 Gal Tighthead",list:250.00,dist:125.00,ml:18925},
+  {code:"VT5150.15",name:"VAULT CERAMIC HIGH FOAM",size:"15 Gal Drum",list:742.50,dist:371.25,ml:56781},
+  {code:"VT7000.05",name:"VAULT CERAMIC PROTECTANT",size:"5 Gal Tighthead",list:560.00,dist:280.00,ml:18925},
+  {code:"VT7000.15",name:"VAULT CERAMIC PROTECTANT",size:"15 Gal Drum",list:1672.50,dist:836.25,ml:56781},
+  {code:"VT7020.15",name:"VAULT ALL-SURFACE PROTECTANT",size:"15 Gal Drum",list:1192.50,dist:596.25,ml:56781},
+  {code:"VT9000.05",name:"VAULT GRAPHENE",size:"5 Gal Tighthead",list:687.50,dist:343.75,ml:18925},
+  {code:"VT6000B.05",name:"VAULT POLISH - BLUE",size:"5 Gal Tighthead",list:195.00,dist:97.50,ml:18925},
+  {code:"VT6000B.15",name:"VAULT POLISH - BLUE",size:"15 Gal Drum",list:577.50,dist:288.75,ml:56781},
+  {code:"VT6000R.05",name:"VAULT POLISH - RED",size:"5 Gal Tighthead",list:195.00,dist:97.50,ml:18925},
+  {code:"VT6000R.15",name:"VAULT POLISH - RED",size:"15 Gal Drum",list:577.50,dist:288.75,ml:56781},
+  {code:"VT6000Y.05",name:"VAULT POLISH - YELLOW",size:"5 Gal Tighthead",list:195.00,dist:97.50,ml:18925},
+  {code:"VT6000Y.15",name:"VAULT POLISH - YELLOW",size:"15 Gal Drum",list:577.50,dist:288.75,ml:56781},
+  {code:"VT6000W.15",name:"VAULT POLISH - WHITE",size:"15 Gal Drum",list:577.50,dist:288.75,ml:56781},
+  {code:"VT6000G.15",name:"VAULT POLISH - GREEN",size:"15 Gal Drum",list:577.50,dist:288.75,ml:56781},
+  {code:"VT5900L.01",name:"VAULT FOAMING FRAGRANCE - LEMON",size:"4×1 Gal Box",list:224.00,dist:112.00,ml:15142},
+  {code:"VT5900T.01",name:"VAULT FOAMING FRAGRANCE - TROPICAL",size:"4×1 Gal Box",list:168.00,dist:84.00,ml:15142},
+  // EXTENDED LINE
+  {code:"EXT110.55",name:"PRESOAK PRO I",size:"55 Gal Drum",cat:"Low pH Presoak",list:1211.61,dist:605.81,ml:208175},
+  {code:"EXT111.55",name:"PRO 3",size:"55 Gal Drum",list:1211.61,dist:605.81,ml:208175},
+  {code:"EXT115.05",name:"PRESOAK PRO II",size:"5 Gal Pail",list:120.00,dist:60.00,ml:18925},
+  {code:"EXT115.30",name:"PRESOAK PRO II",size:"30 Gal Drum",list:717.84,dist:358.92,ml:113562},
+  {code:"EXT115.55",name:"PRESOAK PRO II",size:"55 Gal Drum",list:1249.95,dist:624.98,ml:208175},
+  {code:"EXT126.05",name:"DOUBLE BARREL",size:"5 Gal Pail",list:93.74,dist:46.87,ml:18925},
+  {code:"EXT126.30",name:"DOUBLE BARREL",size:"30 Gal Drum",list:543.33,dist:271.67,ml:113562},
+  {code:"EXT126.55",name:"DOUBLE BARREL",size:"55 Gal Drum",list:926.25,dist:463.13,ml:208175},
+  {code:"EXT129.55",name:"APOGEE",size:"55 Gal Drum",list:1209.73,dist:604.87,ml:208175},
+  {code:"EXT130.30",name:"WHITE KNIGHT",size:"30 Gal Drum",list:600.52,dist:300.26,ml:113562},
+  {code:"EXT130.55",name:"WHITE KNIGHT",size:"55 Gal Drum",list:1032.97,dist:516.49,ml:208175},
+  {code:"EXT137.05",name:"MAGNUM WHEEL CLEANER",size:"5 Gal Pail",list:75.98,dist:37.99,ml:18925},
+  {code:"EXT137.55",name:"MAGNUM WHEEL CLEANER",size:"55 Gal Drum",list:733.85,dist:366.93,ml:208175},
+  {code:"EXT138.05",name:"WHEEL BLASTER",size:"5 Gal Pail",list:97.62,dist:48.81,ml:18925},
+  {code:"EXT138.15",name:"WHEEL BLASTER",size:"15 Gal Drum",list:292.85,dist:146.43,ml:56781},
+  {code:"EXT138.55",name:"WHEEL BLASTER",size:"55 Gal Drum",list:971.78,dist:485.89,ml:208175},
+  {code:"EXT147.05",name:"BONE DRY",size:"5 Gal Pail",list:121.20,dist:60.60,ml:18925},
+  {code:"EXT147.15",name:"BONE DRY",size:"15 Gal Drum",list:359.66,dist:179.83,ml:56781},
+  {code:"EXT147.30",name:"BONE DRY",size:"30 Gal Drum",list:707.74,dist:353.87,ml:113562},
+  {code:"EXT149.05",name:"BREAK AWAY CONCENTRATE",size:"5 Gal Pail",list:191.98,dist:95.99,ml:18925},
+  {code:"EXT149.15",name:"BREAK AWAY CONCENTRATE",size:"15 Gal Drum",list:547.66,dist:273.83,ml:56781},
+  {code:"EXT149.30",name:"BREAK AWAY CONCENTRATE",size:"30 Gal Drum",list:1130.09,dist:565.05,ml:113562},
+  {code:"EXT150.05",name:"QUICK DRY",size:"5 Gal Pail",list:143.56,dist:71.78,ml:18925},
+  {code:"EXT150.15",name:"QUICK DRY",size:"15 Gal Drum",list:430.78,dist:215.39,ml:56781},
+  {code:"EXT150.30",name:"QUICK DRY",size:"30 Gal Drum",list:839.03,dist:419.52,ml:113562},
+  {code:"EXT150.55",name:"QUICK DRY",size:"55 Gal Drum",list:1456.40,dist:728.20,ml:208175},
+  {code:"EXT161.05",name:"BRILLIANT",size:"5 Gal Pail",list:86.99,dist:43.50,ml:18925},
+  {code:"EXT161.30",name:"BRILLIANT",size:"30 Gal Drum",list:503.36,dist:251.68,ml:113562},
+  {code:"EXT161.55",name:"BRILLIANT",size:"55 Gal Drum",list:854.85,dist:427.43,ml:208175},
+  {code:"EXT167B.05",name:"SNAP COAT - BLUE",size:"5 Gal Pail",list:101.63,dist:50.82,ml:18925},
+  {code:"EXT167B.15",name:"SNAP COAT - BLUE",size:"15 Gal Drum",list:304.89,dist:152.45,ml:56781},
+  {code:"EXT167B.30",name:"SNAP COAT - BLUE",size:"30 Gal Drum",list:591.25,dist:295.63,ml:113562},
+  {code:"EXT167O.05",name:"SNAP COAT - ORANGE",size:"5 Gal Pail",list:101.63,dist:50.82,ml:18925},
+  {code:"EXT167R.05",name:"SNAP COAT - RED",size:"5 Gal Pail",list:101.63,dist:50.82,ml:18925},
+  {code:"EXT167W.05",name:"SNAP COAT - WHITE",size:"5 Gal Pail",list:97.00,dist:48.50,ml:18925},
+  {code:"EXT167W.30",name:"SNAP COAT - WHITE",size:"30 Gal Drum",list:563.44,dist:281.72,ml:113562},
+  {code:"EXT182.05",name:"BURST - WILD CHERRY",size:"5 Gal Pail",list:205.18,dist:102.59,ml:18925},
+  {code:"EXT182.15",name:"BURST - WILD CHERRY",size:"15 Gal Drum",list:615.54,dist:307.77,ml:56781},
+  {code:"EXT184.05",name:"BURST - VACA ALL DAY",size:"5 Gal Pail",list:205.18,dist:102.59,ml:18925},
+  {code:"EXT189.05",name:"BURST - SUMMER DREAM",size:"5 Gal Pail",list:205.18,dist:102.59,ml:18925},
+  {code:"EXT190.05",name:"BURST - PUMPKIN SPICE",size:"5 Gal Pail",list:205.18,dist:102.59,ml:18925},
+  {code:"EXT191.05",name:"BURST - STAY CALM & CLEAN",size:"5 Gal Pail",list:205.18,dist:102.59,ml:18925},
+  {code:"EXT192.05",name:"BURST - BALSAM FROST",size:"5 Gal Pail",list:205.18,dist:102.59,ml:18925},
+  {code:"EXT192.15",name:"BURST - BALSAM FROST",size:"15 Gal Drum",list:615.54,dist:307.77,ml:56781},
+  {code:"EXT193.15",name:"LEMONADE SPLASH",size:"15 Gal Drum",list:840.00,dist:420.00,ml:56781},
+  {code:"EXT196.05",name:"BURST - AFTER DARK",size:"5 Gal Pail",list:308.00,dist:154.00,ml:18925},
+  {code:"EXT216.05",name:"HIGHLINE",size:"5 Gal Pail",list:75.12,dist:37.56,ml:18925},
+  {code:"EXT216.55",name:"HIGHLINE",size:"55 Gal Drum",list:724.57,dist:362.29,ml:208175},
+  {code:"EXT280B.05",name:"FOAM-AROMA BLUE",size:"5 Gal Pail",list:101.74,dist:50.87,ml:18925},
+  {code:"EXT280B.15",name:"FOAM-AROMA BLUE",size:"15 Gal Drum",list:305.23,dist:152.62,ml:56781},
+  {code:"EXT280B.55",name:"FOAM-AROMA BLUE",size:"55 Gal Drum",list:1049.63,dist:524.82,ml:208175},
+  {code:"EXT280C.05",name:"FOAM-AROMA CLEAR",size:"5 Gal Pail",list:101.74,dist:50.87,ml:18925},
+  {code:"EXT280R.05",name:"FOAM-AROMA RED",size:"5 Gal Pail",list:101.74,dist:50.87,ml:18925},
+  {code:"EXT280R.15",name:"FOAM-AROMA RED",size:"15 Gal Drum",list:305.23,dist:152.62,ml:56781},
+  {code:"EXT280Y.05",name:"FOAM-AROMA YELLOW",size:"5 Gal Pail",list:101.74,dist:50.87,ml:18925},
+  {code:"EXT280Y.15",name:"FOAM-AROMA YELLOW",size:"15 Gal Drum",list:305.23,dist:152.62,ml:56781},
+  {code:"EXT291.05",name:"JOLT",size:"5 Gal Pail",list:131.61,dist:65.81,ml:18925},
+  {code:"EXT291.15",name:"JOLT",size:"15 Gal Drum",list:394.82,dist:197.41,ml:56781},
+  {code:"EXT291.30",name:"JOLT",size:"30 Gal Drum",list:771.10,dist:385.55,ml:113562},
+  {code:"EXT291.55",name:"JOLT",size:"55 Gal Drum",list:1379.68,dist:689.84,ml:208175},
+  {code:"EXT293.05",name:"BURST - EPIC BERRY",size:"5 Gal Pail",list:205.18,dist:102.59,ml:18925},
+  {code:"EXT295.05",name:"TIRE SHINE S",size:"5 Gal Pail",list:164.00,dist:82.00,ml:18925},
+  {code:"EXT295.55",name:"TIRE SHINE S",size:"55 Gal Drum",list:1750.00,dist:875.00,ml:208175},
+  {code:"EXT300.05",name:"BLUE ICE-ON LINE",size:"5 Gal Pail",list:137.50,dist:96.25,ml:18925},
+  {code:"EXT300.15",name:"BLUE ICE-ON LINE",size:"15 Gal Drum",list:412.50,dist:288.75,ml:56781},
+  {code:"EXT300.30",name:"BLUE ICE-ON LINE",size:"30 Gal Drum",list:810.00,dist:567.00,ml:113562},
+  {code:"EXT302.05",name:"ECO-SHINE",size:"5 Gal Pail",list:87.50,dist:43.75,ml:18925},
+  {code:"EXT302.30",name:"ECO-SHINE",size:"30 Gal Drum",list:480.00,dist:240.00,ml:113562},
+  {code:"EXT372.05",name:"BUG-BE-GONE",size:"5 Gal Pail",list:88.34,dist:44.17,ml:18925},
+  {code:"EXT372.30",name:"BUG-BE-GONE",size:"30 Gal Drum",list:511.52,dist:255.76,ml:113562},
+  {code:"EXT374.05",name:"BRITE AUTO 4-4-1",size:"5 Gal Pail",list:96.86,dist:48.43,ml:18925},
+  {code:"EXT374.15",name:"BRITE AUTO 4-4-1",size:"15 Gal Drum",list:290.57,dist:145.29,ml:56781},
+  {code:"EXT401.15",name:"COLD WEATHER FOAM BRUSH",size:"15 Gal Drum",list:205.00,dist:102.50,ml:56781},
+  {code:"EXT410.05",name:"LEMON SEALER",size:"5 Gal Pail",list:201.22,dist:100.61,ml:18925},
+  {code:"EXT410.30",name:"LEMON SEALER",size:"30 Gal Drum",list:1166.84,dist:583.42,ml:113562},
+  {code:"EXT410.55",name:"LEMON SEALER",size:"55 Gal Drum",list:1990.46,dist:995.23,ml:208175},
+  {code:"EXT425.05",name:"SNAP SHIELD",size:"5 Gal Pail",list:197.28,dist:98.64,ml:18925},
+  {code:"EXT425.15",name:"SNAP SHIELD",size:"15 Gal Drum",list:591.82,dist:295.91,ml:56781},
+  {code:"EXT425.30",name:"SNAP SHIELD",size:"30 Gal Drum",list:1165.60,dist:582.80,ml:113562},
+  {code:"EXT428.05",name:"DOUBLE VISION",size:"5 Gal Pail",list:154.32,dist:77.16,ml:18925},
+  {code:"EXT428.30",name:"DOUBLE VISION",size:"30 Gal Drum",list:808.18,dist:404.09,ml:113562},
+  {code:"EXT428.55",name:"DOUBLE VISION",size:"55 Gal Drum",list:1413.68,dist:706.84,ml:208175},
+  {code:"EXT429.05",name:"FOAMY VISION",size:"5 Gal Pail",list:95.94,dist:47.97,ml:18925},
+  {code:"EXT429.15",name:"FOAMY VISION",size:"15 Gal Drum",list:289.14,dist:144.57,ml:56781},
+  {code:"EXT429.30",name:"FOAMY VISION",size:"30 Gal Drum",list:557.96,dist:278.98,ml:113562},
+  {code:"EXT450.05",name:"SALT SHIELD",size:"5 Gal Pail",list:90.07,dist:45.04,ml:18925},
+  {code:"EXT450.15",name:"SALT SHIELD",size:"15 Gal Drum",list:270.22,dist:135.11,ml:56781},
+  {code:"EXT450.30",name:"SALT SHIELD",size:"30 Gal Drum",list:521.91,dist:260.96,ml:113562},
+  {code:"EXT450.55",name:"SALT SHIELD",size:"55 Gal Drum",list:888.85,dist:444.43,ml:208175},
+  {code:"EXT460.05",name:"GOLDEN KNIGHT",size:"5 Gal Pail",list:129.55,dist:64.78,ml:18925},
+  {code:"EXT460.15",name:"GOLDEN KNIGHT",size:"15 Gal Drum",list:388.65,dist:194.33,ml:56781},
+  {code:"EXT460.30",name:"GOLDEN KNIGHT",size:"30 Gal Drum",list:758.54,dist:379.27,ml:113562},
+  {code:"EXT460.55",name:"GOLDEN KNIGHT",size:"55 Gal Drum",list:1322.09,dist:661.05,ml:208175},
+  {code:"EXT470.05",name:"LIGHTNING",size:"5 Gal Pail",list:119.14,dist:59.57,ml:18925},
+  {code:"EXT470.15",name:"LIGHTNING",size:"15 Gal Drum",list:373.27,dist:186.64,ml:56781},
+  {code:"EXT470.30",name:"LIGHTNING",size:"30 Gal Drum",list:695.74,dist:347.87,ml:113562},
+  {code:"EXT470.55",name:"LIGHTNING",size:"55 Gal Drum",list:1205.67,dist:602.84,ml:208175},
+  {code:"EXT504.05",name:"MAGMA SHINE",size:"5 Gal Pail",list:215.05,dist:107.53,ml:18925},
+  {code:"EXT504.15",name:"MAGMA SHINE",size:"15 Gal Drum",list:645.13,dist:322.57,ml:56781},
+  {code:"EXT504.30",name:"MAGMA SHINE",size:"30 Gal Drum",list:1271.70,dist:635.85,ml:113562},
+  {code:"EXT508.05",name:"SNAP SHINE",size:"5 Gal Pail",list:145.51,dist:72.76,ml:18925},
+  {code:"EXT508.15",name:"SNAP SHINE",size:"15 Gal Drum",list:436.54,dist:218.27,ml:56781},
+  {code:"EXT508.30",name:"SNAP SHINE",size:"30 Gal Drum",list:854.54,dist:427.27,ml:113562},
+  // TRUCK WASH
+  {code:"HEL100.05",name:"HELLCAT",size:"5 Gal Pail",list:99.84,dist:49.92,ml:18925},
+  {code:"HEL100.30",name:"HELLCAT",size:"30 Gal Drum",list:580.82,dist:290.41,ml:113562},
+  {code:"HEL100.55",name:"HELLCAT",size:"55 Gal Drum",list:997.88,dist:498.94,ml:208175},
+  {code:"HEL100.250",name:"HELL CAT",size:"250 Gal Tote",list:4536.91,dist:2268.46,ml:946000},
+  {code:"THU100.05",name:"THUNDERBOLT",size:"5 Gal Pail",list:82.30,dist:41.15,ml:18925},
+  {code:"THU100.15",name:"THUNDERBOLT",size:"15 Gal Drum",list:246.92,dist:123.46,ml:56781},
+  {code:"THU100.30",name:"THUNDERBOLT",size:"30 Gal Drum",list:475.65,dist:237.83,ml:113562},
+  {code:"THU100.55",name:"THUNDERBOLT",size:"55 Gal Drum",list:805.28,dist:402.64,ml:208175},
+  {code:"THU100.250",name:"THUNDERBOLT",size:"250 Gal Tote",list:3660.40,dist:1830.20,ml:946000},
+  {code:"GRE100.05",name:"GREEN LIGHTNING",size:"5 Gal Pail",list:64.25,dist:32.13,ml:18925},
+  {code:"GRE100.55",name:"GREEN LIGHTNING",size:"55 Gal Drum",list:604.67,dist:302.34,ml:208175},
+  {code:"GRE100.250",name:"GREEN LIGHTNING",size:"250 Gal Tote",list:2748.51,dist:1374.26,ml:946000},
+  {code:"CIT110.05",name:"CITRIC CLEAN",size:"5 Gal Pail",list:87.49,dist:43.75,ml:18925},
+  {code:"CIT110.55",name:"CITRIC CLEAN",size:"55 Gal Drum",list:867.86,dist:433.93,ml:208175},
+  {code:"CIT110.250",name:"CITRIC CLEAN",size:"250 Gal Tote",list:3945.09,dist:1972.55,ml:946000},
+  {code:"STR500.05",name:"STRYKER",size:"5 Gal Pail",list:79.08,dist:39.54,ml:18925},
+  {code:"STR500.55",name:"STRYKER",size:"55 Gal Drum",list:767.83,dist:383.92,ml:208175},
+  {code:"SUP120.05",name:"ALUMALITE SUPER",size:"5 Gal Pail",list:96.25,dist:48.13,ml:18925},
+  {code:"SUP120.55",name:"ALUMALITE SUPER",size:"55 Gal Drum",list:837.85,dist:418.93,ml:208175},
+  // TRU PEARL
+  {code:"TRU100.05",name:"TRU PEARL CLEAN",size:"5 Gal Pail",list:116.89,dist:58.45,ml:18925},
+  {code:"TRU100.15",name:"TRU PEARL CLEAN",size:"15 Gal Drum",list:350.67,dist:175.34,ml:56781},
+  {code:"TRU100.30",name:"TRU PEARL CLEAN",size:"30 Gal Drum",list:683.69,dist:341.85,ml:113562},
+  {code:"TRU200.05",name:"TRU PEARL DRY",size:"5 Gal Pail",list:153.65,dist:76.83,ml:18925},
+  {code:"TRU200.15",name:"TRU PEARL DRY",size:"15 Gal Drum",list:460.94,dist:230.47,ml:56781},
+  {code:"TRU200.30",name:"TRU PEARL DRY",size:"30 Gal Drum",list:901.17,dist:450.59,ml:113562},
+  {code:"TRU300.05",name:"TRU PEARL SHIELD",size:"5 Gal Pail",list:243.87,dist:121.94,ml:18925},
+  {code:"TRU300.15",name:"TRU PEARL SHIELD",size:"15 Gal Drum",list:731.62,dist:365.81,ml:56781},
+  {code:"TRU300.30",name:"TRU PEARL SHIELD",size:"30 Gal Drum",list:1445.09,dist:722.55,ml:113562},
+  {code:"TRU350.05",name:"TRU PEARL PROTECT",size:"5 Gal Pail",list:243.87,dist:121.94,ml:18925},
+  {code:"TRU400.05",name:"TRU PEARL HIGH FOAM",size:"5 Gal Pail",list:208.12,dist:104.06,ml:18925},
+  {code:"TRU400.15",name:"TRU PEARL HIGH FOAM",size:"15 Gal Drum",list:624.37,dist:312.19,ml:56781},
+  {code:"TRU400.30",name:"TRU PEARL HIGH FOAM",size:"30 Gal Drum",list:1231.09,dist:615.55,ml:113562},
+  // SELF SERVE
+  {code:"SS100.05",name:"TIRE & WHEEL CLEANER",size:"5 Gal Tighthead",list:120.00,dist:60.00,ml:18925},
+  {code:"SS100.15",name:"TIRE & WHEEL CLEANER",size:"15 Gal Drum",list:360.00,dist:180.00,ml:56781},
+  {code:"SS200.05",name:"PRESOAK & BUG",size:"5 Gal Tighthead",list:120.00,dist:60.00,ml:18925},
+  {code:"SS200.15",name:"PRESOAK & BUG",size:"15 Gal Drum",list:360.00,dist:180.00,ml:56781},
+  {code:"SS300.05",name:"HIGH PRESSURE",size:"5 Gal Tighthead",list:120.00,dist:60.00,ml:18925},
+  {code:"SS300.15",name:"HIGH PRESSURE",size:"15 Gal Drum",list:360.00,dist:180.00,ml:56781},
+  {code:"SS400.05",name:"FOAM BRUSH",size:"5 Gal Tighthead",list:120.00,dist:60.00,ml:18925},
+  {code:"SS400.15",name:"FOAM BRUSH",size:"15 Gal Drum",list:360.00,dist:180.00,ml:56781},
+  {code:"SS450W.05",name:"FOAM BRUSH WHITE",size:"5 Gal Tighthead",list:120.00,dist:60.00,ml:18925},
+  {code:"SS500.05",name:"CLEAR COAT PROTECTANT",size:"5 Gal Tighthead",list:130.00,dist:65.00,ml:18925},
+  {code:"SS500.15",name:"CLEAR COAT PROTECTANT",size:"15 Gal Drum",list:390.00,dist:195.00,ml:56781},
+  // MAINTAIN
+  {code:"MT100.05",name:"MAINTAIN - RAGS TO WRAPS",size:"5 Gal Tighthead",list:90.00,dist:45.00,ml:18925},
+  {code:"MT200.05",name:"MAINTAIN - GREASE TO GRIME",size:"5 Gal Tighthead",list:90.00,dist:45.00,ml:18925},
+  {code:"MT300.05",name:"MAINTAIN - WINDOWS & WALLS",size:"5 Gal Tighthead",list:135.00,dist:67.50,ml:18925},
+  {code:"MT400.05",name:"MAINTAIN - PROTECT & SEAL",size:"5 Gal Tighthead",list:200.00,dist:100.00,ml:18925},
+  // MISC
+  {code:"DFO100.01",name:"D-FOAMER",size:"4×1 Gal Box",list:174.50,dist:87.25,ml:15142},
+  {code:"EXT170.05",name:"CONC GLASS CLEANER",size:"5 Gal Pail",list:132.84,dist:66.42,ml:18925},
+  {code:"EXT707.15",name:"WATER CONDITIONER",size:"15 Gal Drum",list:487.52,dist:243.76,ml:56781},
+  {code:"EXT709.05",name:"KEY 20 - WATER CONDITIONER",size:"5 Gal Pail",list:140.88,dist:70.44,ml:18925},
+  {code:"EXT800.05",name:"KICK-IT",size:"5 Gal Pail",list:119.13,dist:59.57,ml:18925},
+  {code:"EXT800.15",name:"KICK-IT",size:"15 Gal Drum",list:357.37,dist:178.69,ml:56781},
+  {code:"EXT760.05",name:"VERIKLEEN",size:"5 Gal Pail",list:114.30,dist:57.15,ml:18925},
+  {code:"ACE100.05",name:"ACE 10 PLUS",size:"5 Gal Pail",list:81.92,dist:40.96,ml:18925},
+  {code:"ACE100.55",name:"ACE 10 PLUS",size:"55 Gal Drum",list:679.46,dist:339.73,ml:208175},
+  {code:"EXT315.05",name:"BLUE THUNDER",size:"5 Gal Pail",list:94.28,dist:47.14,ml:18925},
+  {code:"DOU100.05",name:"DOUBLE DUTY",size:"5 Gal Pail",list:88.34,dist:44.17,ml:18925},
+  {code:"DOU100.55",name:"DOUBLE DUTY",size:"55 Gal Drum",list:869.81,dist:434.91,ml:208175},
+  {code:"RND400.05",name:"RND702A - HIGH PH PRESOAK",size:"5 Gal Pail",list:101.58,dist:50.79,ml:18925},
+  {code:"RND400.55",name:"RND702A - HIGH PH PRESOAK",size:"55 Gal Drum",list:1015.05,dist:507.53,ml:208175},
+  {code:"TSU100.05",name:"TSUNAMI FLEET WASH",size:"5 Gal Pail",list:94.83,dist:47.42,ml:18925},
+  {code:"TSU100.55",name:"TSUNAMI FLEET WASH",size:"55 Gal Drum",list:822.22,dist:411.11,ml:208175},
+];
+
+const TITRATION = [
+  {code:"VT1070",name:"Vault Low pH 1070",rows:[
+    {drops:25,ratio:"73:1",range:"Tough Cleaning"},{drops:20,ratio:"91:1",range:"Tough Cleaning"},
+    {drops:15,ratio:"122:1",range:"Normal Cleaning"},{drops:5,ratio:"366:1",range:"Easy Cleaning"},
+    {drops:3,ratio:"610:1",range:"Easy Cleaning"}]},
+  {code:"VT2200",name:"Vault High pH",rows:[
+    {drops:30,ratio:"50:1",range:"Tough Cleaning"},{drops:20,ratio:"75:1",range:"Tough Cleaning"},
+    {drops:10,ratio:"155:1",range:"Normal Cleaning"},{drops:5,ratio:"320:1",range:"Easy Cleaning"}]},
+  {code:"VT2010",name:"Vault Bug Remover",rows:[
+    {drops:30,ratio:"68:1",range:"Tough Cleaning"},{drops:25,ratio:"81:1",range:"Tough Cleaning"},
+    {drops:20,ratio:"102:1",range:"Normal Cleaning"},{drops:15,ratio:"135:1",range:"Easy Cleaning"}]},
+  {code:"VT4500",name:"Vault High Wheel",rows:[
+    {drops:20,ratio:"50:1",range:"Tough Cleaning"},{drops:15,ratio:"75:1",range:"Tough Cleaning"},
+    {drops:10,ratio:"120:1",range:"Normal Cleaning"},{drops:5,ratio:"250:1",range:"Easy Cleaning"}]},
+  {code:"VT8020",name:"Vault Drying Agent",rows:[
+    {drops:14,ratio:"800:1",range:"Low Volume Rinse Arch"},{drops:12,ratio:"1,000:1",range:"Low Volume Rinse Arch"},
+    {drops:10,ratio:"1,280:1",range:"High Pressure Rinse Arch"},{drops:8,ratio:"1,600:1",range:"High Pressure Rinse Arch"}]},
+  {code:"VT9050",name:"Vault Salt Shield",rows:[
+    {drops:20,ratio:"22:1",range:"Underbody Flush"},{drops:15,ratio:"29:1",range:"Underbody Flush"},
+    {drops:10,ratio:"43:1",range:"Underbody Flush"}]},
+];
+
+const SDS = [
+  {code:"VT1070",name:"Vault Low pH 1070",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-1070-VAULT-Low-pH-1070-10.17.2022.pdf"},
+  {code:"VT1140",name:"Vault Low pH 1140",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-1140-VAULT-Low-pH-1140-10.24.2022.pdf"},
+  {code:"VT2010",name:"Vault Bug Remover",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-2010-VAULT-Bug-Remover-1-24-2022.pdf"},
+  {code:"VT2200",name:"Vault High pH",url:"https://ver-techlabs.com/wp-content/uploads/2025/04/VT-2200-VAULT-High-pH-9.6.2024.pdf"},
+  {code:"VT2060",name:"Vault High pH Presoak & Prep Soap",url:"https://ver-techlabs.com/wp-content/uploads/2025/10/VT-2060-High-pH-Presoak-Prep-Soap-10.16.2025.pdf"},
+  {code:"VT3000",name:"Vault Booster",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-3000-VAULT-Booster-1-25-2022.pdf"},
+  {code:"VT4500",name:"Vault High Wheel",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-4500-VAULT-High-Wheel-3.7.2022.pdf"},
+  {code:"VT5000",name:"Vault Foam Detergent",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-5000-VAULT-Foam-Detergent-10.27.2023.pdf"},
+  {code:"VT5150",name:"Vault Ceramic High Foam",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-5150-VAULT-Ceramic-High-Foam-10.17.2022.pdf"},
+  {code:"VT5900",name:"Vault Foaming Fragrance",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-5900-VAULT-Foaming-Fragrance-3.8.2022.pdf"},
+  {code:"VT6000",name:"Vault Polish",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-6000-VAULT-Polish-9.29.2022.pdf"},
+  {code:"VT7000",name:"Vault Ceramic Protectant",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-7000-VAULT-Ceramic-Protectant-8-17-2021.pdf"},
+  {code:"VT7020",name:"Vault All-Surface Protectant",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-7020-VAULT-All-Surface-Protectant-3.7.2022.pdf"},
+  {code:"VT7500",name:"Vault Carnauba Wax",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-7500-VAULT-Carnauba-Wax-3.7.2022.pdf"},
+  {code:"VT7800",name:"Vault Flex Ceramic",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-7800-VAULT-Flex-Ceramic-8-19-2022.pdf"},
+  {code:"VT8000",name:"Vault Ceramic Dry Aid",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-8000-VAULT-Ceramic-Dry-Aid-3.8.2022.pdf"},
+  {code:"VT8020",name:"Vault Drying Agent",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-8020-VAULT-Drying-Agent-8-17-2021.pdf"},
+  {code:"VT9000",name:"Vault Graphene",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-9000-VAULT-Graphene-11.21.2023.pdf"},
+  {code:"VT9050",name:"Vault Salt Shield",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/VT-9050-VAULT-Salt-Shield-3.9.2022.pdf"},
+  {code:"EXT300",name:"Blue Ice-On Line",url:"https://ver-techlabs.com/wp-content/uploads/2020/04/EXT300-Blue-Ice-Online-5-1-2015.pdf"},
+  {code:"EXT460",name:"Golden Knight",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT460-Golden-Knight-3-12-15-SDS.pdf"},
+  {code:"EXT470",name:"Lightning",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT470-Lightning-11-8-2021-SDS.pdf"},
+  {code:"EXT147",name:"Bone Dry",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT147-Bone-Dry-5-19-2017.pdf"},
+  {code:"EXT291",name:"Jolt",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT291-Jolt-3-5-15-SDS.pdf"},
+  {code:"EXT508",name:"Snap Shine",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT508-Snap-Shine-5-19-2017.pdf"},
+  {code:"EXT425",name:"Snap Shield",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT425-Snap-Shield-2-13-2018.pdf"},
+  {code:"EXT280B",name:"Foam-Aroma Blue",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT280B-Foam-Aroma-Blue-10-27-2017.pdf"},
+  {code:"EXT280R",name:"Foam-Aroma Red",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT280R-Foam-Aroma-Red-10-27-2017.pdf"},
+  {code:"EXT280Y",name:"Foam-Aroma Yellow",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT280Y-Foam-Aroma-Yellow-10-27-2017.pdf"},
+  {code:"HEL100",name:"Hellcat",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/HEL100-Hellcat-SDS-12-19-2016.pdf"},
+  {code:"THU100",name:"Thunderbolt",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/THU100-Thunderbolt-5-19-2015.pdf"},
+  {code:"STR500",name:"Stryker",url:"https://ver-techlabs.com/wp-content/uploads/2020/04/STR500-Stryker-11-25-2015.pdf"},
+  {code:"SUP120",name:"Alumalite Super",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/SUP120-Alumalite-Super-1-10-2018.pdf"},
+  {code:"GRE100",name:"Green Lightning",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/GRE100-Green-Lightning-5-19-2015.pdf"},
+  {code:"EXT126",name:"Double Barrel",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT126-Double-Barrel-3-12-15-SDS.pdf"},
+  {code:"EXT130",name:"White Knight",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT130-White-Knight-3-12-15-SDS.pdf"},
+  {code:"EXT138",name:"Wheel Blaster",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT138-Wheel-Blaster-3-12-15-SDS.pdf"},
+  {code:"EXT428",name:"Double Vision",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT428-Double-Vision-3-31-15-SDS.pdf"},
+  {code:"EXT372",name:"Bug-Be-Gone",url:"https://ver-techlabs.com/wp-content/uploads/2024/10/EXT372-Bug-B-Gone-4-30-2019.pdf"},
+];
+
+const HARDNESS = [
+  {code:"DOU100",name:"Double Duty",      half:10,  one:15, type:"Monoethanolamine", rank:1},
+  {code:"THU100",name:"Thunderbolt",      half:10,  one:15, type:"Metasilicate",     rank:2},
+  {code:"HEL100",name:"Hellcat",          half:5,   one:10, type:"Metasilicate",     rank:3},
+  {code:"EXT126",name:"Double Barrel",    half:8,   one:15, type:"Sodium Hydroxide", rank:4},
+  {code:"VT2200",name:"Vault High pH",    half:7,   one:14, type:"Sodium Hydroxide", rank:5},
+  {code:"EXT460",name:"Golden Knight",    half:6,   one:12, type:"Sodium Hydroxide", rank:6},
+  {code:"EXT432",name:"Black Knight",     half:5,   one:10, type:"Sodium Hydroxide", rank:null},
+  {code:"EXT129",name:"Apogee",           half:4,   one:8,  type:"Sodium Hydroxide", rank:null},
+  {code:"EXT130",name:"White Knight",     half:null,one:5,  type:"Sodium Hydroxide", rank:null},
+  {code:"EXT138",name:"Wheel Blaster",    half:null,one:5,  type:"Sodium Hydroxide", rank:null},
+  {code:"EXT216",name:"Highline",         half:null,one:5,  type:"Sodium Hydroxide", rank:null},
+  {code:"VT2050",name:"Vault Prep Soap",  half:5,   one:10, type:"Sodium Hydroxide", rank:null},
+  {code:"VT4500",name:"Vault High Wheel", half:4,   one:8,  type:"Sodium Hydroxide", rank:null},
+];
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function showTab(n) {
+  document.querySelectorAll('.tab-panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+}
+
+// ── TAB 0: COST PER CAR ──────────────────────────────────────────────────────
+const cpcRows = Array(8).fill(null).map(()=>({product:'',application:'',grams:''}));
+function buildCPC() {
+  const opts = VAULT.map(p=>`<option value="${p.code}">${p.code} — ${p.name.replace('VAULT ','')}</option>`).join('');
+  const rows = cpcRows.map((r,i)=>`
+    <tr>
+      <td style="color:#aaa;text-align:center">${i+1}</td>
+      <td><select onchange="cpcUpd(${i},'product',this.value)">
+        <option value="">— select —</option>${opts}
+      </select></td>
+      <td><input placeholder="Application" value="${r.application}" oninput="cpcUpd(${i},'application',this.value)"></td>
+      <td><input type="number" placeholder="0.0" style="width:70px" value="${r.grams}" oninput="cpcUpd(${i},'grams',this.value)"></td>
+      <td class="green" id="cpc_ml_${i}">—</td>
+      <td class="green" id="cpc_cost_${i}">—</td>
+    </tr>`).join('');
+  document.getElementById('cpcRows').innerHTML=`
+    <table class="tbl">
+      <thead><tr><th>#</th><th>Vault Product</th><th>Application</th><th>Grams/Car</th><th>mL/Car</th><th>Cost/Car</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+function cpcUpd(i,f,v) {
+  cpcRows[i][f]=v;
+  const r=cpcRows[i];
+  const p=VAULT.find(p=>p.code===r.product);
+  if(p&&r.grams&&!isNaN(r.grams)){
+    const ml=parseFloat(r.grams)/p.sg;
+    document.getElementById(`cpc_ml_${i}`).textContent=ml.toFixed(2);
+    document.getElementById(`cpc_cost_${i}`).textContent='$'+(ml*(p.list/p.ml)).toFixed(4);
+  } else {
+    document.getElementById(`cpc_ml_${i}`).textContent='—';
+    document.getElementById(`cpc_cost_${i}`).textContent='—';
+  }
+}
+
+// ── TAB 1: QUOTE BUILDER ─────────────────────────────────────────────────────
+let quoteLines = [];
+function buildQuoteSelect() {
+  const vaultOpts = VAULT.map(p=>`<option value="${p.code}">${p.code} — ${p.name}</option>`).join('');
+  const extOpts = ALL_PRODUCTS.filter(p=>p.code.startsWith('EXT')||p.code.startsWith('HEL')||p.code.startsWith('THU')||p.code.startsWith('GRE')||p.code.startsWith('TRU')||p.code.startsWith('SS')||p.code.startsWith('MT'))
+    .map(p=>`<option value="${p.code}">${p.code} — ${p.name} (${p.size})</option>`).join('');
+  document.getElementById('qProduct').innerHTML=`<option value="">— select —</option><optgroup label="── VAULT LINE ──">${vaultOpts}</optgroup><optgroup label="── EXTENDED LINE ──">${extOpts}</optgroup>`;
+}
+function addQuoteLine() {
+  const code=document.getElementById('qProduct').value;
+  const qty=parseInt(document.getElementById('qQty').value)||1;
+  const p=ALL_PRODUCTS.find(p=>p.code===code);
+  if(!p)return;
+  quoteLines.push({...p,qty});
+  document.getElementById('qProduct').value='';
+  document.getElementById('qQty').value=1;
+  renderQuote();
+}
+function removeQuoteLine(i) { quoteLines.splice(i,1); renderQuote(); }
+function renderQuote() {
+  const showDist=document.getElementById('qShowDist').checked;
+  if(!quoteLines.length){document.getElementById('quoteTable').innerHTML='<div class="empty">No items — select a product and click Add</div>';return;}
+  const listTotal=quoteLines.reduce((s,l)=>s+l.list*l.qty,0);
+  const distTotal=quoteLines.reduce((s,l)=>s+l.dist*l.qty,0);
+  const extraCols=showDist?`<th>Unit Dist</th><th>Ext Dist</th>`:'';
+  const rows=quoteLines.map((l,i)=>`<tr>
+    <td class="green">${l.code}</td><td>${l.name}</td><td>${l.size}</td><td>${l.qty}</td>
+    <td>$${l.list.toFixed(2)}</td>
+    ${showDist?`<td>$${l.dist.toFixed(2)}</td>`:''}
+    <td class="green">$${(l.list*l.qty).toFixed(2)}</td>
+    ${showDist?`<td class="muted">$${(l.dist*l.qty).toFixed(2)}</td>`:''}
+    <td><button class="btn-sm" onclick="removeQuoteLine(${i})">✕</button></td>
+  </tr>`).join('');
+  const totalCols=showDist?6:4;
+  document.getElementById('quoteTable').innerHTML=`
+    <table class="tbl">
+      <thead><tr><th>Code</th><th>Product</th><th>Size</th><th>Qty</th><th>Unit List</th>${extraCols}<th>Ext List</th>${showDist?'<th>Ext Dist</th>':''}<th></th></tr></thead>
+      <tbody>${rows}
+      <tr class="total-row">
+        <td colspan="${totalCols+1}" style="text-align:right;font-size:9px;letter-spacing:2px">ORDER TOTAL</td>
+        <td>$${listTotal.toFixed(2)}</td>
+        ${showDist?`<td>$${distTotal.toFixed(2)}</td>`:''}
+        <td></td>
+      </tr></tbody>
+    </table>`;
+}
+
+// ── TAB 2: TITRATION ─────────────────────────────────────────────────────────
+function buildTitrationSelect() {
+  document.getElementById('titSelect').innerHTML=`<option value="">— select product —</option>`+
+    TITRATION.map(p=>`<option value="${p.code}">${p.code} — ${p.name}</option>`).join('');
+}
+function renderTitration() {
+  const code=document.getElementById('titSelect').value;
+  const p=TITRATION.find(p=>p.code===code);
+  if(!p){document.getElementById('titResult').innerHTML='<div class="empty">Select a product to view titration data</div>';return;}
+  const rows=p.rows.map((r,i)=>`<tr>
+    <td class="drops-num">${r.drops}</td>
+    <td style="font-weight:600">${r.ratio}</td>
+    <td>${r.range}</td>
+  </tr>`).join('');
+  document.getElementById('titResult').innerHTML=`
+    <div class="card">
+      <div class="tit-product">${p.code}</div>
+      <div class="tit-name">${p.name}</div>
+      <table class="tbl">
+        <thead><tr><th># of Drops</th><th>Ratio</th><th>Suggested Usage Range</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ── TAB 3: SDS LOOKUP ────────────────────────────────────────────────────────
+function renderSDS() {
+  const q=document.getElementById('sdsSearch').value.toLowerCase();
+  if(q.length<2){document.getElementById('sdsResult').innerHTML='<div class="empty">Type to search SDS library</div>';return;}
+  const matches=SDS.filter(p=>p.name.toLowerCase().includes(q)||p.code.toLowerCase().includes(q));
+  if(!matches.length){document.getElementById('sdsResult').innerHTML=`<div class="empty">No results for "${q}"</div>`;return;}
+  const rows=matches.map((p,i)=>`<tr>
+    <td class="green">${p.code}</td>
+    <td>${p.name}</td>
+    <td><a href="${p.url}" target="_blank">↗ Open PDF</a></td>
+  </tr>`).join('');
+  document.getElementById('sdsResult').innerHTML=`
+    <table class="tbl">
+      <thead><tr><th>Code</th><th>Product</th><th>SDS Link</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── TAB 4: PRICE LOOKUP ──────────────────────────────────────────────────────
+function renderPrice() {
+  const q=document.getElementById('priceSearch').value.toLowerCase();
+  if(q.length<2){document.getElementById('priceResult').innerHTML='<div class="empty">Enter at least 2 characters</div>';return;}
+  const matches=ALL_PRODUCTS.filter(p=>p.name.toLowerCase().includes(q)||p.code.toLowerCase().includes(q));
+  if(!matches.length){document.getElementById('priceResult').innerHTML=`<div class="empty">No products found for "${q}"</div>`;return;}
+  const rows=matches.map((p,i)=>`<tr>
+    <td class="green">${p.code}</td>
+    <td>${p.name}</td>
+    <td>${p.size}</td>
+    <td style="font-weight:600">$${p.list.toFixed(2)}</td>
+    <td class="muted">$${p.dist.toFixed(2)}</td>
+  </tr>`).join('');
+  document.getElementById('priceResult').innerHTML=`
+    <table class="tbl">
+      <thead><tr><th>Code</th><th>Product</th><th>Size</th><th>List</th><th>Distributor</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── TAB 5: WATER HARDNESS ────────────────────────────────────────────────────
+function buildHardness() {
+  const rows=HARDNESS.map((p,i)=>`<tr>
+    <td>${p.rank?`<span class="rank-badge">#${p.rank}</span>`:'<span style="color:#666">—</span>'}</td>
+    <td style="font-weight:600">${p.code}</td>
+    <td>${p.name}</td>
+    <td style="color:#aaa;font-size:10px">${p.type}</td>
+    <td style="font-weight:600">${p.half?p.half+' gpg':'—'}</td>
+    <td class="green" style="font-weight:600">${p.one?p.one+' gpg':'—'}</td>
+  </tr>`).join('');
+  document.getElementById('hardnessTable').innerHTML=`
+    <table class="tbl">
+      <thead><tr><th>Rank</th><th>Code</th><th>Product</th><th>Alkalinity Source</th><th>½ oz/gal</th><th>1 oz/gal</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── TAB 6: PACKAGE BUILDER ───────────────────────────────────────────────────
+let packages=[{name:'Basic',takeRate:100,products:[{product:'',application:'',ml:''}]}];
+const PKG_COLORS=['#6fcf6f','#64B5F6','#F48FB1','#FFB74D','#CE93D8'];
+
+function pkgCost(pkg) {
+  return pkg.products.reduce((s,r)=>{
+    const p=VAULT.find(p=>p.code===r.product);
+    if(!p||!r.ml||isNaN(r.ml))return s;
+    return s+(parseFloat(r.ml)*(p.list/p.ml));
+  },0);
+}
+
+function renderPackages() {
+  const vaultOpts=VAULT.map(p=>`<option value="${p.code}">${p.code} — ${p.name.replace('VAULT ','')}</option>`).join('');
+  
+  const pkgHTML=packages.map((pkg,pi)=>{
+    const cost=pkgCost(pkg);
+    const color=PKG_COLORS[pi%PKG_COLORS.length];
+    const prodRows=pkg.products.map((r,ri)=>{
+      const p=VAULT.find(p=>p.code===r.product);
+      const cost=p&&r.ml&&!isNaN(r.ml)?'$'+(parseFloat(r.ml)*(p.list/p.ml)).toFixed(4):'—';
+      return `<tr>
+        <td><select onchange="pkgUpdProd(${pi},${ri},'product',this.value)">
+          <option value="">— select —</option>${vaultOpts}
+        </select></td>
+        <td><input placeholder="Application" value="${r.application}" oninput="pkgUpdProd(${pi},${ri},'application',this.value)"></td>
+        <td><input type="number" placeholder="0.0" style="width:75px" value="${r.ml}" oninput="pkgUpdProd(${pi},${ri},'ml',this.value)"></td>
+        <td style="color:${color};font-weight:600">${cost}</td>
+        <td>${pkg.products.length>1?`<button class="btn-sm" onclick="pkgRemoveProd(${pi},${ri})">✕</button>`:''}</td>
+      </tr>`;
+    }).join('');
+    return `<div class="pkg-card" style="border-left:3px solid ${color}">
+      <div class="pkg-header">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;flex:1">
+          <div class="field" style="flex:2;min-width:130px">
+            <label>Package Name</label>
+            <input value="${pkg.name}" oninput="pkgUpdName(${pi},this.value)">
+          </div>
+          <div class="field" style="width:90px">
+            <label>Take Rate %</label>
+            <input type="number" min="0" max="100" value="${pkg.takeRate}" oninput="pkgUpdRate(${pi},this.value)">
+          </div>
+          <div>
+            <div class="pkg-label">Cost/Car</div>
+            <div class="pkg-cost" style="color:${color}">$${cost.toFixed(4)}</div>
+          </div>
+        </div>
+        ${packages.length>1?`<button class="btn-sm" onclick="pkgRemove(${pi})">✕ Remove</button>`:''}
+      </div>
+      <table class="tbl">
+        <thead><tr><th>Product</th><th>Application</th><th>mL/Car</th><th>Cost/Car</th><th></th></tr></thead>
+        <tbody>${prodRows}</tbody>
+      </table>
+      <button class="btn-ghost" style="margin-top:10px" onclick="pkgAddProd(${pi})">+ Add Product</button>
+    </div>`;
+  }).join('');
+
+  // Blended section
+  let blended='';
+  if(packages.length>1){
+    const totalRate=packages.reduce((s,p)=>s+parseFloat(p.takeRate||0),0);
+    const blendedCost=packages.reduce((s,p)=>s+(pkgCost(p)*(parseFloat(p.takeRate||0)/100)),0);
+    const bRows=packages.map((p,i)=>{
+      const rate=parseFloat(p.takeRate||0);
+      const cost=pkgCost(p);
+      return `<tr>
+        <td style="color:${PKG_COLORS[i%PKG_COLORS.length]};font-weight:600">${p.name||'Package '+(i+1)}</td>
+        <td>${rate}%</td>
+        <td style="color:#ccc">$${cost.toFixed(4)}</td>
+        <td style="font-weight:600">$${(cost*(rate/100)).toFixed(4)}</td>
+      </tr>`;
+    }).join('');
+    const warn=Math.abs(totalRate-100)>0.5?`<p class="warn">⚠ Take rates total ${totalRate.toFixed(0)}% — should equal 100% for accurate blended cost.</p>`:'';
+    blended=`<div class="blended-box">
+      <div class="sec-title" style="margin-bottom:12px">Blended Cost Per Car</div>
+      <table class="tbl">
+        <thead><tr><th>Package</th><th>Take Rate</th><th>Cost/Car</th><th>Weighted</th></tr></thead>
+        <tbody>${bRows}
+        <tr class="total-row">
+          <td colspan="2" style="text-align:right;font-size:9px;letter-spacing:2px">BLENDED COST/CAR</td>
+          <td></td>
+          <td style="font-size:18px">$${blendedCost.toFixed(4)}</td>
+        </tr></tbody>
+      </table>${warn}
+    </div>`;
+  }
+
+  document.getElementById('packages').innerHTML=pkgHTML;
+  document.getElementById('blendedResult').innerHTML=blended;
+  
+  // Restore select values
+  packages.forEach((pkg,pi)=>{
+    pkg.products.forEach((r,ri)=>{
+      const sel=document.querySelector(`#tab6 .pkg-card:nth-child(${pi+1}) tbody tr:nth-child(${ri+1}) select`);
+      if(sel&&r.product) sel.value=r.product;
+    });
+  });
+}
+
+function pkgUpdName(pi,v){packages[pi].name=v;}
+function pkgUpdRate(pi,v){packages[pi].takeRate=v;renderPackages();}
+function pkgUpdProd(pi,ri,f,v){packages[pi].products[ri][f]=v;renderPackages();}
+function pkgAddProd(pi){packages[pi].products.push({product:'',application:'',ml:''});renderPackages();}
+function pkgRemoveProd(pi,ri){packages[pi].products.splice(ri,1);renderPackages();}
+function pkgRemove(pi){packages.splice(pi,1);renderPackages();}
+function addPackage(){packages.push({name:`Package ${packages.length+1}`,takeRate:0,products:[{product:'',application:'',ml:''}]});renderPackages();}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+buildCPC();
+buildQuoteSelect();
+buildTitrationSelect();
+buildHardness();
+renderPackages();
+</script>
+</body>
+</html>
